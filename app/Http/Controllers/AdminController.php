@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdminController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        return view('Admin.dashboard');
+        return view($request->user()->isAdmin() ? 'Admin.dashboard' : 'User.dashboard');
     }
 }

@@ -29,6 +29,7 @@ class LoginControllerTest extends TestCase
     public function test_active_user_can_log_in_and_view_dashboard(): void
     {
         $user = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
             'email' => 'admin@example.com',
             'password' => 'Admin@12345',
         ]);
@@ -40,6 +41,23 @@ class LoginControllerTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
         $this->get(route('dashboard'))->assertOk();
+    }
+
+    public function test_regular_user_can_log_in_and_is_sent_to_the_user_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+            'email' => 'user@example.com',
+            'password' => 'UserPass123',
+        ]);
+
+        $this->post(route('process_login'), [
+            'email' => 'user@example.com',
+            'password' => 'UserPass123',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->get(route('dashboard'))->assertSee('User Dashboard');
     }
 
     public function test_inactive_user_cannot_log_in(): void
@@ -57,7 +75,7 @@ class LoginControllerTest extends TestCase
 
         $response->assertRedirect(route('login'));
         $this->assertGuest();
-        $response->assertSessionHas('danger', 'Invalid email or password.');
+        $response->assertSessionHas('danger', 'Your account is currently inactive. Please contact the system administrator for assistance.');
     }
 
     public function test_login_requires_a_valid_email_and_password(): void

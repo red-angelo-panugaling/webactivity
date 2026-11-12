@@ -12,7 +12,7 @@ class DashboardControllerTest extends TestCase
 
     public function test_authenticated_user_can_view_dashboard_and_pie_chart(): void
     {
-        $response = $this->actingAs(User::factory()->create())->get(route('dashboard'));
+        $response = $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))->get(route('dashboard'));
 
         $response->assertSee('<canvas id="myPieChart"', false);
         $this->assertSame(1, substr_count($response->getContent(), 'chart-pie-demo.js'));

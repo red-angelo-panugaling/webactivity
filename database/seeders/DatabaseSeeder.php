@@ -19,8 +19,10 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Administrator',
+                'username' => 'admin',
                 'password' => 'Admin@12345',
                 'status' => true,
+                'role' => User::ROLE_ADMIN,
                 'email_verified_at' => now(),
             ],
         );

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -21,6 +23,14 @@ class LoginController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string', 'min:6'],
         ]);
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if ($user && ! $user->status && Hash::check($credentials['password'], $user->password)) {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('danger', 'Your account is currently inactive. Please contact the system administrator for assistance.');
+        }
 
         if (! Auth::attempt([...$credentials, 'status' => true], $request->boolean('remember'))) {
             return back()
