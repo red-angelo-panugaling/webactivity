@@ -4,14 +4,20 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
 
-@if (request()->routeIs('dashboard'))
+@if (request()->routeIs('dashboard', 'charts'))
 <script src="{{ asset('backend/dist/assets/demo/chart-area-demo.js') }}"></script>
 
 <script src="{{ asset('backend/dist/assets/demo/chart-bar-demo.js') }}"></script>
 
 <script src="{{ asset('backend/dist/assets/demo/chart-pie-demo.js') }}"></script>
+@endif
 
+@if (request()->routeIs('dashboard', 'tables'))
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 
-<script src="{{ asset('backend/dist/js/datatables-simple-demo.js') }}"></script>
+<script src="{{ asset('backend/dist/js/datatables-simple-demo.js') }}?v={{ filemtime(public_path('backend/dist/js/datatables-simple-demo.js')) }}"></script>
+@endif
+
+@if (request()->routeIs('admin.users.index'))
+<script src="{{ asset('backend/dist/js/user-management.js') }}?v={{ filemtime(public_path('backend/dist/js/user-management.js')) }}"></script>
 @endif

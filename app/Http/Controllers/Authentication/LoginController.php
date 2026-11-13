@@ -20,11 +20,14 @@ class LoginController extends Controller
     public function processLogin(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
+        $loginIdentifier = $credentials['email'];
+        $user = User::where('email', $loginIdentifier)
+            ->orWhere('username', $loginIdentifier)
+            ->first();
 
         if ($user && ! $user->status && Hash::check($credentials['password'], $user->password)) {
             return back()
@@ -32,7 +35,11 @@ class LoginController extends Controller
                 ->with('danger', 'Your account is currently inactive. Please contact the system administrator for assistance.');
         }
 
-        if (! Auth::attempt([...$credentials, 'status' => true], $request->boolean('remember'))) {
+        if (! Auth::attempt([
+            'email' => $user?->email ?? $loginIdentifier,
+            'password' => $credentials['password'],
+            'status' => true,
+        ], $request->boolean('remember'))) {
             return back()
                 ->withInput($request->only('email'))
                 ->with('danger', 'Invalid email or password.');

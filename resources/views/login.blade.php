@@ -25,15 +25,15 @@
 
                                         @if ($errors->any())
                                             <div class="alert alert-danger" role="alert">
-                                                Please enter a valid email and password.
+                                                Please enter a valid email or username and password.
                                             </div>
                                         @endif
 
                                         <form action="{{ route('process_login') }}" method="POST">
                                             @csrf
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" name="email" type="email" value="{{ old('email') }}" placeholder="name@example.com" autocomplete="username" required />
-                                                <label for="inputEmail">Email address</label>
+                                                <input class="form-control" id="inputEmail" name="email" type="text" value="{{ old('email') }}" placeholder="Email or username" autocomplete="username" required />
+                                                <label for="inputEmail">Email address or username</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" required />

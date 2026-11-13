@@ -12,18 +12,26 @@ class UserManagementController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = User::query()->when($request->filled('search'), function ($query) use ($request): void {
-            $search = $request->string('search')->toString();
-            $query->where(function ($query) use ($search): void {
-                $query->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        })->when($request->filled('role'), fn ($query) => $query->where('role', $request->string('role')->toString()))
-            ->when($request->has('status') && $request->input('status') !== '', fn ($query) => $query->where('status', $request->boolean('status')));
+        $search = trim($request->string('search')->toString());
+        $role = $request->input('role');
+        $status = $request->input('status');
+        $perPage = in_array($request->input('per_page'), ['10', '15', '25', '50'], true)
+            ? (int) $request->input('per_page')
+            : 15;
+
+        $query = User::query()
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('full_name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($role, [User::ROLE_ADMIN, User::ROLE_USER], true), fn ($query) => $query->where('role', $role))
+            ->when(in_array($status, ['active', 'inactive'], true), fn ($query) => $query->where('status', $status === 'active'));
 
         return view('Admin.users.index', [
-            'users' => $query->latest()->paginate(15)->withQueryString(),
+            'users' => $query->orderBy('id')->paginate($perPage)->withQueryString(),
             'totalUsers' => User::count(),
             'activeUsers' => User::where('status', true)->count(),
             'inactiveUsers' => User::where('status', false)->count(),
@@ -67,6 +75,10 @@ class UserManagementController extends Controller
             return back()->with('danger', 'You cannot remove your own administrator role.');
         }
 
+        if ($user->isAdmin() && $validated['role'] !== User::ROLE_ADMIN && User::where('role', User::ROLE_ADMIN)->count() === 1) {
+            return back()->with('danger', 'You cannot remove the role from the last administrator account.');
+        }
+
         $user->name = $validated['full_name'];
         $user->username = $validated['username'];
         $user->email = $validated['email'];
@@ -95,5 +107,20 @@ class UserManagementController extends Controller
         $user->save();
 
         return back()->with('success', 'User account status updated successfully.');
+    }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if ($user->is(auth()->user())) {
+            return back()->with('danger', 'You cannot delete your own account.');
+        }
+
+        if ($user->isAdmin() && User::where('role', User::ROLE_ADMIN)->count() === 1) {
+            return back()->with('danger', 'You cannot delete the last administrator account.');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'User account deleted successfully.');
     }
 }

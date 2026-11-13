@@ -16,6 +16,8 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware(['auth', 'active'])->group(function (): void {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::view('/charts', 'pages.charts')->name('charts');
+    Route::view('/tables', 'pages.tables')->name('tables');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::middleware('admin')->prefix('admin/users')->name('admin.users.')->group(function (): void {
@@ -23,5 +25,6 @@ Route::middleware(['auth', 'active'])->group(function (): void {
         Route::post('/', [UserManagementController::class, 'store'])->name('store');
         Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserManagementController::class, 'updateStatus'])->name('status');
+        Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
     });
 });
