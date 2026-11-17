@@ -7,6 +7,12 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
+                @unless (auth()->user()->isAdmin())
+                <a class="nav-link" href="{{ route('dashboard') }}#profile">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                    Profile
+                </a>
+                @endunless
                 @if (auth()->user()->isAdmin())
                 <div class="sb-sidenav-menu-heading">Administration</div>
                 <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
@@ -14,6 +20,7 @@
                     User Management
                 </a>
                 @endif
+                @if (auth()->user()->isAdmin())
                 <div class="sb-sidenav-menu-heading">Interface</div>
                 <a class="nav-link {{ request()->query('sidenav') === 'light' ? '' : 'collapsed' }}" href="#collapseLayouts" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="{{ request()->query('sidenav') === 'light' ? 'true' : 'false' }}" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -51,6 +58,7 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                     Tables
                 </a>
+                @endif
             </div>
         </div>
         <div class="sb-sidenav-footer">

@@ -14,7 +14,7 @@
                         <ol class="breadcrumb mb-4"><li class="breadcrumb-item active">Welcome, {{ auth()->user()->full_name }}</li></ol>
                         <div class="row">
                             <div class="col-lg-8">
-                                <div class="card mb-4">
+                                <div class="card mb-4" id="profile">
                                     <div class="card-header"><i class="fas fa-user me-1"></i> My Information</div>
                                     <div class="card-body">
                                         <dl class="row mb-0">
