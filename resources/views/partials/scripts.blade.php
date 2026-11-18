@@ -18,6 +18,6 @@
 <script src="{{ asset('backend/dist/js/datatables-simple-demo.js') }}?v={{ filemtime(public_path('backend/dist/js/datatables-simple-demo.js')) }}"></script>
 @endif
 
-@if (request()->routeIs('admin.users.index'))
+@if (request()->routeIs('admin.users.index', 'admin.employees.index'))
 <script src="{{ asset('backend/dist/js/user-management.js') }}?v={{ filemtime(public_path('backend/dist/js/user-management.js')) }}"></script>
 @endif

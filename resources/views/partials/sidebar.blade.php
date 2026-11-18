@@ -19,6 +19,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
                     User Management
                 </a>
+                <a class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}" href="{{ route('admin.employees.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-address-book"></i></div>
+                    Employee Management
+                </a>
                 @endif
                 @if (auth()->user()->isAdmin())
                 <div class="sb-sidenav-menu-heading">Interface</div>

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Authentication\LoginController;
+use App\Http\Controllers\EmployeeManagementController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +18,7 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware(['auth', 'active'])->group(function (): void {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::view('/charts', 'pages.charts')->name('charts');
     Route::view('/tables', 'pages.tables')->name('tables');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -26,5 +29,9 @@ Route::middleware(['auth', 'active'])->group(function (): void {
         Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserManagementController::class, 'updateStatus'])->name('status');
         Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function (): void {
+        Route::resource('employees', EmployeeManagementController::class)->except(['show']);
     });
 });
